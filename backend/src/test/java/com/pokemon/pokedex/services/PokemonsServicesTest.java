@@ -1,5 +1,7 @@
 package com.pokemon.pokedex.services;
 
+import static com.pokemon.pokedex.data.PokemonData.POKEMON1;
+import static com.pokemon.pokedex.data.PokemonData.POKEMON2;
 import static com.pokemon.pokedex.services.model.PokemonTypeEnum.FIRE;
 import static com.pokemon.pokedex.services.model.PokemonTypeEnum.FLYING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,12 +11,12 @@ import static org.mockito.Mockito.when;
 
 import com.pokemon.pokedex.repositories.PokemonRepository;
 import com.pokemon.pokedex.services.model.Pokemon;
+import com.pokemon.pokedex.services.model.PokemonFilter;
 import java.util.List;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class PokemonsServicesTest {
+class PokemonsServicesTest {
 
   private PokemonRepository pokemonRepositoryMock;
   private PokemonsServices pokemonsServices;
@@ -28,15 +30,7 @@ public class PokemonsServicesTest {
   @Test
   void getAllPokemon() {
 
-    var pokemon1 = Pokemon.builder()
-      .id(1)
-      .name("Pokemon1")
-      .type(List.of(FIRE, FLYING))
-      .cp(43)
-      .hp(34)
-      .build();
-
-    when(pokemonRepositoryMock.getAllPokemon()).thenReturn(List.of(pokemon1));
+    when(pokemonRepositoryMock.getAllPokemon()).thenReturn(List.of(POKEMON1));
 
     //
 
@@ -52,6 +46,30 @@ public class PokemonsServicesTest {
     assertTrue(pokemon.getType().containsAll(List.of(FIRE, FLYING)));
     assertEquals(43, pokemon.getCp());
     assertEquals(34, pokemon.getHp());
+
+  }
+
+  @Test
+  void getPokemonFilteredByName() {
+
+    PokemonFilter filter = PokemonFilter.builder().nameSubstring("n2").build();
+
+    when(pokemonRepositoryMock.getPokemonsFiltered(filter.getNameSubstring())).thenReturn(List.of(POKEMON1, POKEMON2));
+
+    //
+
+    List<Pokemon> result = pokemonsServices.getPokemons(filter);
+
+    //
+
+    assertEquals(2, result.size());
+    var pokemon = result.get(1);
+    assertEquals(2, pokemon.getId());
+    assertEquals("Pokemon2", pokemon.getName());
+    assertEquals(1, pokemon.getType().size());
+    assertTrue(pokemon.getType().contains(FLYING));
+    assertEquals(65, pokemon.getCp());
+    assertEquals(39, pokemon.getHp());
 
   }
 

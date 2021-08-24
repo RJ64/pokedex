@@ -17,4 +17,13 @@ public class PokemonData {
     .hp(34)
     .build();
 
+  public static final Pokemon POKEMON2 = Pokemon.builder()
+    .id(2)
+    .name("Pokemon2")
+    .image("image2")
+    .type(List.of(FLYING))
+    .cp(65)
+    .hp(39)
+    .build();
+
 }

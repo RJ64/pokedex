@@ -4,6 +4,8 @@ import static java.util.Collections.emptyList;
 
 import com.pokemon.pokedex.services.model.Pokemon;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class PokemonRepository {
 
@@ -13,6 +15,16 @@ public class PokemonRepository {
 
   public List<Pokemon> getAllPokemon() {
     return POKEMONS;
+  }
+
+  public List<Pokemon> getPokemonsFiltered(String nameContainsSubstring) {
+    return getAllPokemon().stream()
+      .filter(filterByNameContainingSubstring(nameContainsSubstring))
+      .collect(Collectors.toList());
+  }
+
+  private Predicate<Pokemon> filterByNameContainingSubstring(String substring) {
+    return pokemon -> pokemon.getName().toLowerCase().contains(substring);
   }
 
 }
