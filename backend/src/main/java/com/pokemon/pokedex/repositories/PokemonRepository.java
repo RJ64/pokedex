@@ -4,14 +4,16 @@ import static java.util.Collections.emptyList;
 import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.toMap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pokemon.pokedex.services.model.Pokemon;
-import com.pokemon.pokedex.services.model.PokemonTypeEnum;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.pokemon.pokedex.rest.resource.PokemonConnection;
+import com.pokemon.pokedex.model.Pokemon;
+import com.pokemon.pokedex.model.PokemonFilter;
+import com.pokemon.pokedex.model.PokemonTypeEnum;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,22 +27,61 @@ public class PokemonRepository {
 
   public PokemonRepository(String path) {
     this.path = path;
-    pokemons = getAllPokemon().stream().collect(toMap(Pokemon::getId, identity()));
+    pokemons = loadPokemon().stream().collect(toMap(Pokemon::getNumber, identity()));
   }
 
-  public List<Pokemon> getPokemonsFiltered(String nameContainsSubstring, PokemonTypeEnum type) {
-    return pokemons.values().stream()
-      .filter(filterByNameContainingSubstring(nameContainsSubstring))
-      .filter(filterByType(type))
+  public List<Pokemon> getAllPokemon() {
+    return new ArrayList<>(pokemons.values());
+  }
+
+  public PokemonConnection getPokemonsFiltered(PokemonFilter filter) {
+
+    List<Pokemon> pokemonsFiltered = pokemons.values().stream()
+      .filter(filterByNameContainingSubstring(filter.getNameSubstring()))
+      .filter(filterByType(filter.getType()))
+      .filter(filterByFavorite(filter.getIsFavorite()))
       .collect(Collectors.toList());
+
+    int fromIndex = filter.getOffset();
+    int toIndex = fromIndex + filter.getLimit();
+    if (pokemonsFiltered.size() <= fromIndex) {
+      fromIndex = 0;
+      toIndex = 0;
+    }
+    if (toIndex > pokemonsFiltered.size()) {
+      toIndex = pokemonsFiltered.size();
+    }
+
+    return new PokemonConnection(
+      filter.getLimit(),
+      filter.getOffset(),
+      pokemonsFiltered.size(),
+      pokemonsFiltered.subList(fromIndex, toIndex)
+    );
+
+  }
+
+  public Optional<Pokemon> getPokemonById(int pokemonId) {
+    return Optional.ofNullable(pokemons.get(pokemonId));
+  }
+
+  public Optional<Pokemon> getPokemonByName(String pokemonName) {
+    String nameLowerCase = pokemonName.toLowerCase();
+    return pokemons.values().stream().filter(p -> p.getName().toLowerCase().equals(nameLowerCase)).findFirst();
   }
 
   public void addToFavorite(int pokemonId) {
-    pokemons.get(pokemonId).setFavorite(true);
+    var pokemonModifying = pokemons.get(pokemonId);
+    if (pokemonModifying != null) {
+      pokemonModifying.setFavorite(true);
+    }
   }
 
   public void removeFromFavorite(int pokemonId) {
-    pokemons.get(pokemonId).setFavorite(false);
+    var pokemonModifying = pokemons.get(pokemonId);
+    if (pokemonModifying != null) {
+      pokemonModifying.setFavorite(false);
+    }
   }
 
   private Predicate<Pokemon> filterByNameContainingSubstring(String substring) {
@@ -51,17 +92,17 @@ public class PokemonRepository {
     return pokemon -> type == null || pokemon.getTypes().contains(type);
   }
 
-  private List<Pokemon> getAllPokemon() {
+  private Predicate<Pokemon> filterByFavorite(Boolean isFavorite) {
+    return pokemon -> isFavorite == null || pokemon.isFavorite() == isFavorite;
+  }
+
+  private List<Pokemon> loadPokemon() {
     return Optional.ofNullable(readFileWithPokemons()).map(this::parseJsonStringToPokemonList).orElse(emptyList());
   }
 
   private List<Pokemon> parseJsonStringToPokemonList(String jsonString) {
-    try {
-      var mapper = new ObjectMapper();
-      return mapper.readValue(jsonString, new TypeReference<List<Pokemon>>(){});
-    } catch (JsonProcessingException e) {
-      return emptyList();
-    }
+    var listType = new TypeToken<ArrayList<Pokemon>>(){}.getType();
+    return new Gson().fromJson(jsonString, listType);
   }
 
   private String readFileWithPokemons() {

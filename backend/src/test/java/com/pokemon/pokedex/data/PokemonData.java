@@ -1,15 +1,15 @@
 package com.pokemon.pokedex.data;
 
-import static com.pokemon.pokedex.services.model.PokemonTypeEnum.FIRE;
-import static com.pokemon.pokedex.services.model.PokemonTypeEnum.FLYING;
+import static com.pokemon.pokedex.model.PokemonTypeEnum.FIRE;
+import static com.pokemon.pokedex.model.PokemonTypeEnum.FLYING;
 
-import com.pokemon.pokedex.services.model.Pokemon;
+import com.pokemon.pokedex.model.Pokemon;
 import java.util.List;
 
 public class PokemonData {
 
   public static final Pokemon POKEMON1 = Pokemon.builder()
-    .id(1)
+    .id("001")
     .name("Pokemon1")
     .types(List.of(FIRE, FLYING))
     .maxCP(43)
@@ -17,7 +17,7 @@ public class PokemonData {
     .build();
 
   public static final Pokemon POKEMON2 = Pokemon.builder()
-    .id(2)
+    .id("002")
     .name("Pokemon2")
     .types(List.of(FLYING))
     .maxCP(65)

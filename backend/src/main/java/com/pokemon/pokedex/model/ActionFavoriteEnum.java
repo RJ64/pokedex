@@ -1,4 +1,4 @@
-package com.pokemon.pokedex.services.model;
+package com.pokemon.pokedex.model;
 
 public enum ActionFavoriteEnum {
   ADD, DELETE

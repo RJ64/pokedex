@@ -1,10 +1,14 @@
 package com.pokemon.pokedex.services;
 
-import com.pokemon.pokedex.services.model.ActionFavoriteEnum;
-import com.pokemon.pokedex.services.model.Pokemon;
+import com.pokemon.pokedex.model.ActionFavoriteEnum;
+import com.pokemon.pokedex.model.Pokemon;
+import com.pokemon.pokedex.model.PokemonTypeEnum;
 import com.pokemon.pokedex.repositories.PokemonRepository;
-import com.pokemon.pokedex.services.model.PokemonFilter;
-import java.util.List;
+import com.pokemon.pokedex.model.PokemonFilter;
+import com.pokemon.pokedex.rest.resource.PokemonConnection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PokemonsServices {
 
@@ -14,21 +18,30 @@ public class PokemonsServices {
     this.pokemonRepository = pokemonRepository;
   }
 
-  public List<Pokemon> getPokemons(PokemonFilter filters) {
-    return getPokemonsFiltered(filters);
+  public PokemonConnection getPokemons(PokemonFilter filters) {
+    return pokemonRepository.getPokemonsFiltered(filters);
   }
 
-  public void changeStatusFavorite(int pokemonId, ActionFavoriteEnum action) {
+  public Optional<Pokemon> getPokemonById(int pokemonId) {
+    return pokemonRepository.getPokemonById(pokemonId);
+  }
+
+  public Optional<Pokemon> getPokemonByName(String pokemonName) {
+    return pokemonRepository.getPokemonByName(pokemonName);
+  }
+
+  public Set<PokemonTypeEnum> getAllPokemonTypes() {
+    return pokemonRepository.getAllPokemon().stream().flatMap(p -> p.getTypes().stream()).collect(Collectors.toSet());
+  }
+
+  public Optional<Pokemon> changeStatusFavorite(int pokemonId, ActionFavoriteEnum action) {
     if (action.equals(ActionFavoriteEnum.ADD)) {
       pokemonRepository.addToFavorite(pokemonId);
     }
     else {
       pokemonRepository.removeFromFavorite(pokemonId);
     }
-  }
-
-  private List<Pokemon> getPokemonsFiltered(PokemonFilter filters) {
-    return pokemonRepository.getPokemonsFiltered(filters.getNameSubstring(), filters.getType());
+    return pokemonRepository.getPokemonById(pokemonId);
   }
 
 }

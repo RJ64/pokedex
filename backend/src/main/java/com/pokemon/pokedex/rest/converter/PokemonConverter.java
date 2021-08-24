@@ -1,8 +1,8 @@
 package com.pokemon.pokedex.rest.converter;
 
-import com.pokemon.pokedex.services.model.Pokemon;
-import com.pokemon.pokedex.services.model.PokemonTypeEnum;
-import com.pokemon.pokedex.rest.resource.PokemonBasicResource;
+import com.pokemon.pokedex.model.Pokemon;
+import com.pokemon.pokedex.model.PokemonBasicResource;
+import com.pokemon.pokedex.model.PokemonTypeEnum;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,9 +14,9 @@ public class PokemonConverter {
 
   private static PokemonBasicResource toBasicPokemon(Pokemon pokemon) {
     return new PokemonBasicResource(
-      pokemon.getId(),
+      pokemon.getNumber(),
       pokemon.getName(),
-      "urlToImage",
+      pokemon.getImage(),
       typesToStringList(pokemon.getTypes()),
       pokemon.isFavorite()
     );

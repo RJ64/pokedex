@@ -1,4 +1,4 @@
-package com.pokemon.pokedex.rest.resource;
+package com.pokemon.pokedex.model;
 
 import java.util.List;
 import lombok.Value;

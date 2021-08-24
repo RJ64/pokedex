@@ -1,4 +1,4 @@
-package com.pokemon.pokedex.services.model;
+package com.pokemon.pokedex.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

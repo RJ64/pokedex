@@ -1,13 +1,13 @@
 package com.pokemon.pokedex.repositories;
 
-import static com.pokemon.pokedex.services.model.PokemonTypeEnum.ELECTRIC;
-import static com.pokemon.pokedex.services.model.PokemonTypeEnum.FLYING;
+import static com.pokemon.pokedex.model.PokemonTypeEnum.ELECTRIC;
+import static com.pokemon.pokedex.model.PokemonTypeEnum.FLYING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.pokemon.pokedex.services.model.Pokemon;
+import com.pokemon.pokedex.model.Pokemon;
+import com.pokemon.pokedex.model.PokemonFilter;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,15 +23,18 @@ class PokemonRepositoryTest {
   @Test
   void getAllPokemon() {
 
+    var pokemonFilter = new PokemonFilter();
+    pokemonFilter.setLimit(155);
+
     //
 
-    List<Pokemon> result = pokemonRepository.getPokemonsFiltered(null, null);
+    List<Pokemon> result = pokemonRepository.getPokemonsFiltered(pokemonFilter).getEdges();
 
     //
 
     assertEquals(151, result.size());
     var pokemon = result.get(24);
-    assertEquals(25, pokemon.getId());
+    assertEquals(25, pokemon.getNumber());
     assertEquals("Pikachu", pokemon.getName());
     assertEquals(1, pokemon.getTypes().size());
     assertEquals(777, pokemon.getMaxCP());
@@ -42,15 +45,18 @@ class PokemonRepositoryTest {
   @Test
   void getPokemonFilteredByName() {
 
+    var pokemonFilter = new PokemonFilter();
+    pokemonFilter.setNameSubstring("rai");
+
     //
 
-    List<Pokemon> result = pokemonRepository.getPokemonsFiltered("rai", null);
+    List<Pokemon> result = pokemonRepository.getPokemonsFiltered(pokemonFilter).getEdges();
 
     //
 
     assertEquals(1, result.size());
     var pokemon = result.get(0);
-    assertEquals(26, pokemon.getId());
+    assertEquals(26, pokemon.getNumber());
     assertEquals("Raichu", pokemon.getName());
     assertEquals(1, pokemon.getTypes().size());
     assertTrue(pokemon.getTypes().contains(ELECTRIC));
@@ -62,9 +68,13 @@ class PokemonRepositoryTest {
   @Test
   void getPokemonFilteredByType() {
 
+    var pokemonFilter = new PokemonFilter();
+    pokemonFilter.setLimit(155);
+    pokemonFilter.setType(FLYING);
+
     //
 
-    List<Pokemon> result = pokemonRepository.getPokemonsFiltered(null, FLYING);
+    List<Pokemon> result = pokemonRepository.getPokemonsFiltered(pokemonFilter).getEdges();
 
     //
 
@@ -75,9 +85,13 @@ class PokemonRepositoryTest {
   @Test
   void getPokemonFilteredByNameAndType() {
 
+    var pokemonFilter = new PokemonFilter();
+    pokemonFilter.setNameSubstring("pid");
+    pokemonFilter.setType(FLYING);
+
     //
 
-    List<Pokemon> result = pokemonRepository.getPokemonsFiltered("pid", FLYING);
+    List<Pokemon> result = pokemonRepository.getPokemonsFiltered(pokemonFilter).getEdges();
 
     //
 
@@ -93,7 +107,7 @@ class PokemonRepositoryTest {
     pokemonRepository.addToFavorite(25);
     List<Pokemon> favoritePokemons = getFavoritePokemon();
     assertEquals(1, favoritePokemons.size());
-    assertEquals(25, favoritePokemons.get(0).getId());
+    assertEquals(25, favoritePokemons.get(0).getNumber());
 
     pokemonRepository.removeFromFavorite(25);
     favoritePokemons = getFavoritePokemon();
@@ -102,13 +116,16 @@ class PokemonRepositoryTest {
   }
 
   private List<Pokemon> getFavoritePokemon() {
-    List<Pokemon> pokemons = pokemonRepository.getPokemonsFiltered(null, null);
-    return pokemons.stream().filter(Pokemon::isFavorite).collect(Collectors.toList());
+    var pokemonFilter = new PokemonFilter();
+    pokemonFilter.setIsFavorite(true);
+    return pokemonRepository.getPokemonsFiltered(pokemonFilter).getEdges();
   }
 
   private void removeAllPokemonFromFavorite() {
-    List<Pokemon> pokemons = pokemonRepository.getPokemonsFiltered(null, null);
-    pokemons.forEach(pokemon -> pokemonRepository.removeFromFavorite(pokemon.getId()));
+    var pokemonFilter = new PokemonFilter();
+    pokemonFilter.setLimit(152);
+    List<Pokemon> pokemons = pokemonRepository.getPokemonsFiltered(pokemonFilter).getEdges();
+    pokemons.forEach(pokemon -> pokemonRepository.removeFromFavorite(pokemon.getNumber()));
   }
 
 }

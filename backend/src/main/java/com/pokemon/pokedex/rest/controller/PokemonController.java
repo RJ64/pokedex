@@ -1,11 +1,11 @@
 package com.pokemon.pokedex.rest.controller;
 
+import com.pokemon.pokedex.model.ActionFavoriteEnum;
+import com.pokemon.pokedex.model.Pokemon;
 import com.pokemon.pokedex.rest.converter.PokemonConverter;
-import com.pokemon.pokedex.services.model.ActionFavoriteEnum;
-import com.pokemon.pokedex.services.model.Pokemon;
 import com.pokemon.pokedex.services.PokemonsServices;
-import com.pokemon.pokedex.services.model.PokemonFilter;
-import com.pokemon.pokedex.services.model.PokemonTypeEnum;
+import com.pokemon.pokedex.model.PokemonFilter;
+import com.pokemon.pokedex.model.PokemonTypeEnum;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +41,7 @@ public class PokemonController {
     }
 
     var filters = createFilter(pokemonNameContainsSubstring, pokemonWithType);
-    List<Pokemon> pokemons = pokemonsServices.getPokemons(filters);
+    List<Pokemon> pokemons = pokemonsServices.getPokemons(filters).getEdges();
 
     return ResponseEntity
       .status(HttpStatus.OK)
@@ -76,11 +75,11 @@ public class PokemonController {
   }
 
   private PokemonFilter createFilter(String nameSubstring, String type) {
-    var nameSubstringLowercase = Optional.ofNullable(nameSubstring).map(String::toLowerCase).orElse(null);
-    return PokemonFilter.builder()
-      .nameSubstring(nameSubstringLowercase)
-      .type(PokemonTypeEnum.toEnum(type))
-      .build();
+    var pokemonFilter = new PokemonFilter();
+    pokemonFilter.setNameSubstring(Optional.ofNullable(nameSubstring).map(String::toLowerCase).orElse(null));
+    pokemonFilter.setType(PokemonTypeEnum.toEnum(type));
+    pokemonFilter.setLimit(155);
+    return pokemonFilter;
   }
 
 }
