@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class PokemonConverterTest {
+class PokemonConverterTest {
 
   @Test
   void getAllPokemon() {

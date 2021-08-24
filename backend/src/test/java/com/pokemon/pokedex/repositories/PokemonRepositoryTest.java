@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.pokemon.pokedex.services.model.Pokemon;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -82,6 +83,32 @@ class PokemonRepositoryTest {
 
     assertEquals(3, result.size());
 
+  }
+
+  @Test
+  void addAndRemovePokemonFromFavorite() {
+
+    removeAllPokemonFromFavorite();
+
+    pokemonRepository.addToFavorite(25);
+    List<Pokemon> favoritePokemons = getFavoritePokemon();
+    assertEquals(1, favoritePokemons.size());
+    assertEquals(25, favoritePokemons.get(0).getId());
+
+    pokemonRepository.removeFromFavorite(25);
+    favoritePokemons = getFavoritePokemon();
+    assertEquals(0, favoritePokemons.size());
+
+  }
+
+  private List<Pokemon> getFavoritePokemon() {
+    List<Pokemon> pokemons = pokemonRepository.getPokemonsFiltered(null, null);
+    return pokemons.stream().filter(Pokemon::isFavorite).collect(Collectors.toList());
+  }
+
+  private void removeAllPokemonFromFavorite() {
+    List<Pokemon> pokemons = pokemonRepository.getPokemonsFiltered(null, null);
+    pokemons.forEach(pokemon -> pokemonRepository.removeFromFavorite(pokemon.getId()));
   }
 
 }

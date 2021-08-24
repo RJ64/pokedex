@@ -1,6 +1,7 @@
 package com.pokemon.pokedex.rest.controller;
 
 import com.pokemon.pokedex.rest.converter.PokemonConverter;
+import com.pokemon.pokedex.services.model.ActionFavoriteEnum;
 import com.pokemon.pokedex.services.model.Pokemon;
 import com.pokemon.pokedex.services.PokemonsServices;
 import com.pokemon.pokedex.services.model.PokemonFilter;
@@ -12,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +37,7 @@ public class PokemonController {
     @RequestParam(name = "type", required = false) String pokemonWithType
   ) {
 
-    if (!validParameters(pokemonWithType)) {
+    if (!validType(pokemonWithType)) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
@@ -46,8 +50,25 @@ public class PokemonController {
       .body(PokemonConverter.toBasicPokemonList(pokemons));
   }
 
-  private boolean validParameters(String type) {
-    return validType(type);
+  @PostMapping(value = "/{pokemonId}/favorite/{action}")
+  public ResponseEntity<?> markUnmarkPokemonAsFavorite(
+    @PathVariable("pokemonId") int pokemonId,
+    @PathVariable("action") String action
+  ) {
+
+    if (!validAction(action)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    pokemonsServices.changeStatusFavorite(pokemonId, ActionFavoriteEnum.valueOf(action.toUpperCase()));
+
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .build();
+  }
+
+  private boolean validAction(String action) {
+    return action.toUpperCase().equals(ActionFavoriteEnum.ADD.name()) || action.toUpperCase().equals(ActionFavoriteEnum.DELETE.name());
   }
 
   private boolean validType(String type) {
@@ -55,7 +76,7 @@ public class PokemonController {
   }
 
   private PokemonFilter createFilter(String nameSubstring, String type) {
-    String nameSubstringLowercase = Optional.ofNullable(nameSubstring).map(String::toLowerCase).orElse(null);
+    var nameSubstringLowercase = Optional.ofNullable(nameSubstring).map(String::toLowerCase).orElse(null);
     return PokemonFilter.builder()
       .nameSubstring(nameSubstringLowercase)
       .type(PokemonTypeEnum.toEnum(type))

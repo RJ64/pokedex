@@ -16,9 +16,9 @@ public class PokemonConverter {
     return new PokemonBasicResource(
       pokemon.getId(),
       pokemon.getName(),
-      null,//pokemon.getImage(),
+      "urlToImage",
       typesToStringList(pokemon.getTypes()),
-      false//pokemon.isFavorite()
+      pokemon.isFavorite()
     );
   }
 

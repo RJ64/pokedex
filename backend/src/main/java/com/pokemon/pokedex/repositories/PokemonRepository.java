@@ -1,6 +1,8 @@
 package com.pokemon.pokedex.repositories;
 
 import static java.util.Collections.emptyList;
+import static java.util.function.UnaryOperator.identity;
+import static java.util.stream.Collectors.toMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -18,18 +21,26 @@ import java.util.stream.Collectors;
 public class PokemonRepository {
 
   private final String path;
-  private final List<Pokemon> pokemons;
+  private final Map<Integer, Pokemon> pokemons;
 
   public PokemonRepository(String path) {
     this.path = path;
-    pokemons = getAllPokemon();
+    pokemons = getAllPokemon().stream().collect(toMap(Pokemon::getId, identity()));
   }
 
   public List<Pokemon> getPokemonsFiltered(String nameContainsSubstring, PokemonTypeEnum type) {
-    return pokemons.stream()
+    return pokemons.values().stream()
       .filter(filterByNameContainingSubstring(nameContainsSubstring))
       .filter(filterByType(type))
       .collect(Collectors.toList());
+  }
+
+  public void addToFavorite(int pokemonId) {
+    pokemons.get(pokemonId).setFavorite(true);
+  }
+
+  public void removeFromFavorite(int pokemonId) {
+    pokemons.get(pokemonId).setFavorite(false);
   }
 
   private Predicate<Pokemon> filterByNameContainingSubstring(String substring) {

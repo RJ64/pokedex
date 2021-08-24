@@ -3,6 +3,7 @@ package com.pokemon.pokedex.rest.controller;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,6 +74,25 @@ class PokemonControllerIT {
     mvc.perform(get("/pokemons").param("type", "electric").param("name", "CHU"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(2)));
+
+  }
+
+  @Test
+  void addRemoveFromFavorite() throws Exception {
+
+    mvc.perform(post("/pokemons/25/favorite/add"))
+      .andExpect(status().isOk());
+
+    mvc.perform(get("/pokemons"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.[?(@.favorite==true)]", hasSize(1)));
+
+    mvc.perform(post("/pokemons/25/favorite/delete"))
+      .andExpect(status().isOk());
+
+    mvc.perform(get("/pokemons"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.[?(@.favorite==true)]", hasSize(0)));
 
   }
 
