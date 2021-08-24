@@ -58,7 +58,8 @@ class PokemonControllerIT {
       .andExpect(jsonPath("$[0].id", equalTo(2)))
       .andExpect(jsonPath("$[0].name", equalTo("Raichu")))
       .andExpect(jsonPath("$[0].image", equalTo(null)))
-      .andExpect(jsonPath("$[0].types", equalTo(emptyList())))
+      .andExpect(jsonPath("$[0].types", hasSize(1)))
+      .andExpect(jsonPath("$[0].types[0]", equalTo("FLYING")))
       .andExpect(jsonPath("$[0].favorite", equalTo(false)));
 
   }

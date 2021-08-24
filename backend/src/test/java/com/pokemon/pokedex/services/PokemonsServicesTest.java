@@ -30,11 +30,11 @@ class PokemonsServicesTest {
   @Test
   void getAllPokemon() {
 
-    when(pokemonRepositoryMock.getAllPokemon()).thenReturn(List.of(POKEMON1));
+    when(pokemonRepositoryMock.getPokemonsFiltered(null, null)).thenReturn(List.of(POKEMON1));
 
     //
 
-    List<Pokemon> result = pokemonsServices.getPokemons();
+    List<Pokemon> result = pokemonsServices.getPokemons(PokemonFilter.builder().build());
 
     //
 
@@ -54,7 +54,7 @@ class PokemonsServicesTest {
 
     PokemonFilter filter = PokemonFilter.builder().nameSubstring("n2").build();
 
-    when(pokemonRepositoryMock.getPokemonsFiltered(filter.getNameSubstring())).thenReturn(List.of(POKEMON1, POKEMON2));
+    when(pokemonRepositoryMock.getPokemonsFiltered(filter.getNameSubstring(), null)).thenReturn(List.of(POKEMON1, POKEMON2));
 
     //
 

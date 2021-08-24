@@ -1,17 +1,11 @@
 package com.pokemon.pokedex.services.model;
 
 import lombok.Builder;
-import lombok.Value;
-import org.springframework.util.StringUtils;
+import lombok.Getter;
 
-@Value
+@Getter
 @Builder
 public class PokemonFilter {
-
   String nameSubstring;
-
-  public boolean isEmpty() {
-    return !StringUtils.hasText(nameSubstring);
-  }
-
+  PokemonTypeEnum type;
 }

@@ -14,22 +14,11 @@ public class PokemonsServices {
   }
 
   public List<Pokemon> getPokemons(PokemonFilter filters) {
-    if (filters.isEmpty()) {
-      return getAllPokemons();
-    }
     return getPokemonsFiltered(filters);
   }
 
-  public List<Pokemon> getPokemons() {
-    return getPokemons(PokemonFilter.builder().build());
-  }
-
-  private List<Pokemon> getAllPokemons() {
-    return pokemonRepository.getAllPokemon();
-  }
-
   private List<Pokemon> getPokemonsFiltered(PokemonFilter filters) {
-    return pokemonRepository.getPokemonsFiltered(filters.getNameSubstring());
+    return pokemonRepository.getPokemonsFiltered(filters.getNameSubstring(), filters.getType());
   }
 
 }

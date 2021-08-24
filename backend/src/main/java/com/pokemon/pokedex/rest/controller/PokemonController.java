@@ -4,6 +4,7 @@ import com.pokemon.pokedex.rest.converter.PokemonConverter;
 import com.pokemon.pokedex.services.model.Pokemon;
 import com.pokemon.pokedex.services.PokemonsServices;
 import com.pokemon.pokedex.services.model.PokemonFilter;
+import com.pokemon.pokedex.services.model.PokemonTypeEnum;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,19 +28,36 @@ public class PokemonController {
 
   @GetMapping(produces = "application/json")
   public ResponseEntity<?> getPokemons(
-    @RequestParam(name = "name", required = false) String pokemonNameContainsSubstring
+    @RequestParam(name = "name", required = false) String pokemonNameContainsSubstring,
+    @RequestParam(name = "type", required = false) String pokemonWithType
   ) {
 
-    var filters = PokemonFilter.builder()
-      .nameSubstring(pokemonNameContainsSubstring)
-      .build();
+    if (!validParameters(pokemonWithType)) {
+      return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    }
 
+    var filters = createFilter(pokemonNameContainsSubstring, pokemonWithType);
     List<Pokemon> pokemons = pokemonsServices.getPokemons(filters);
 
     return ResponseEntity
       .status(HttpStatus.OK)
       .contentType(MediaType.APPLICATION_JSON)
       .body(PokemonConverter.toBasicPokemonList(pokemons));
+  }
+
+  private boolean validParameters(String type) {
+    return validType(type);
+  }
+
+  private boolean validType(String type) {
+    return type == null || PokemonTypeEnum.toEnum(type) != null;
+  }
+
+  private PokemonFilter createFilter(String nameSubstring, String type) {
+    return PokemonFilter.builder()
+      .nameSubstring(nameSubstring)
+      .type(PokemonTypeEnum.toEnum(type))
+      .build();
   }
 
 }
