@@ -35,7 +35,6 @@ public class PokemonConverterTest {
     var pokemon = result.get(0);
     assertEquals(1, pokemon.getId());
     assertEquals("Pokemon1", pokemon.getName());
-    assertEquals("image1", pokemon.getImage());
     assertEquals(2, pokemon.getTypes().size());
     assertTrue(pokemon.getTypes().containsAll(List.of("FIRE", "FLYING")));
     assertFalse(pokemon.isFavorite());

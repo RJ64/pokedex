@@ -10,7 +10,7 @@ public class Config {
 
   @Bean
   public PokemonRepository pokemonRepository() {
-    return new PokemonRepository();
+    return new PokemonRepository("./src/main/resources/data/pokemons.json");
   }
 
   @Bean

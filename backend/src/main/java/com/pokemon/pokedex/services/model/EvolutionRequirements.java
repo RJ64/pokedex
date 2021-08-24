@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class PokemonHeight {
-  private String minimum;
-  private String maximum;
+public class EvolutionRequirements {
+  private int amount;
+  private String name;
 }

@@ -11,19 +11,17 @@ public class PokemonData {
   public static final Pokemon POKEMON1 = Pokemon.builder()
     .id(1)
     .name("Pokemon1")
-    .image("image1")
-    .type(List.of(FIRE, FLYING))
-    .cp(43)
-    .hp(34)
+    .types(List.of(FIRE, FLYING))
+    .maxCP(43)
+    .maxHP(34)
     .build();
 
   public static final Pokemon POKEMON2 = Pokemon.builder()
     .id(2)
     .name("Pokemon2")
-    .image("image2")
-    .type(List.of(FLYING))
-    .cp(65)
-    .hp(39)
+    .types(List.of(FLYING))
+    .maxCP(65)
+    .maxHP(39)
     .build();
 
 }

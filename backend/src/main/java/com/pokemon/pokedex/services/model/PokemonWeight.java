@@ -1,9 +1,13 @@
 package com.pokemon.pokedex.services.model;
 
-import lombok.Value;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Value
+@Setter
+@Getter
+@NoArgsConstructor
 public class PokemonWeight {
-  float min;
-  float max;
+  private String minimum;
+  private String maximum;
 }

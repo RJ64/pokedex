@@ -1,24 +1,17 @@
 package com.pokemon.pokedex.rest.controller;
 
-import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.pokemon.pokedex.repositories.PokemonRepository;
 import com.pokemon.pokedex.rest.controller.PokemonControllerIT.Configuration;
 import com.pokemon.pokedex.services.PokemonsServices;
-import java.util.concurrent.Executors;
-import java.util.function.Supplier;
-import javax.sql.DataSource;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -39,13 +32,11 @@ class PokemonControllerIT {
 
     mvc.perform(get("/pokemons"))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$", hasSize(2)))
-      .andExpect(jsonPath("$[0].id", equalTo(1)))
-      .andExpect(jsonPath("$[0].name", equalTo("Pikachu")))
-      .andExpect(jsonPath("$[0].image", equalTo(null)))
-      .andExpect(jsonPath("$[0].types", equalTo(emptyList())))
-      .andExpect(jsonPath("$[0].favorite", equalTo(false)))
-      .andExpect(jsonPath("$[1].id", equalTo(2)));
+      .andExpect(jsonPath("$", hasSize(151)))
+      .andExpect(jsonPath("$[24].id", equalTo(25)))
+      .andExpect(jsonPath("$[24].name", equalTo("Pikachu")))
+      .andExpect(jsonPath("$[24].types", equalTo(List.of("ELECTRIC"))))
+      .andExpect(jsonPath("$[24].favorite", equalTo(false)));
 
   }
 
@@ -55,12 +46,33 @@ class PokemonControllerIT {
     mvc.perform(get("/pokemons").param("name", "rai"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$", hasSize(1)))
-      .andExpect(jsonPath("$[0].id", equalTo(2)))
-      .andExpect(jsonPath("$[0].name", equalTo("Raichu")))
-      .andExpect(jsonPath("$[0].image", equalTo(null)))
-      .andExpect(jsonPath("$[0].types", hasSize(1)))
-      .andExpect(jsonPath("$[0].types[0]", equalTo("FLYING")))
-      .andExpect(jsonPath("$[0].favorite", equalTo(false)));
+      .andExpect(jsonPath("$[0].id", equalTo(26)));
+
+  }
+
+  @Test
+  void shouldReturnOnePokemonFilteredByType() throws Exception {
+
+    mvc.perform(get("/pokemons").param("type", "electric"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$", hasSize(9)));
+
+  }
+
+  @Test
+  void typeFilteringNotValid() throws Exception {
+
+    mvc.perform(get("/pokemons").param("type", "invented"))
+      .andExpect(status().isBadRequest());
+
+  }
+
+  @Test
+  void shouldReturnOnePokemonFilteredByTypeAndName() throws Exception {
+
+    mvc.perform(get("/pokemons").param("type", "electric").param("name", "CHU"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$", hasSize(2)));
 
   }
 
@@ -69,7 +81,7 @@ class PokemonControllerIT {
 
     @Bean
     public PokemonRepository pokemonRepository() {
-      return new PokemonRepository();
+      return new PokemonRepository("./src/test/java/com/pokemon/pokedex/data/pokemons.json");
     }
 
     @Bean

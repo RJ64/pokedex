@@ -42,10 +42,10 @@ class PokemonsServicesTest {
     var pokemon = result.get(0);
     assertEquals(1, pokemon.getId());
     assertEquals("Pokemon1", pokemon.getName());
-    assertEquals(2, pokemon.getType().size());
-    assertTrue(pokemon.getType().containsAll(List.of(FIRE, FLYING)));
-    assertEquals(43, pokemon.getCp());
-    assertEquals(34, pokemon.getHp());
+    assertEquals(2, pokemon.getTypes().size());
+    assertTrue(pokemon.getTypes().containsAll(List.of(FIRE, FLYING)));
+    assertEquals(43, pokemon.getMaxCP());
+    assertEquals(34, pokemon.getMaxHP());
 
   }
 
@@ -66,10 +66,10 @@ class PokemonsServicesTest {
     var pokemon = result.get(1);
     assertEquals(2, pokemon.getId());
     assertEquals("Pokemon2", pokemon.getName());
-    assertEquals(1, pokemon.getType().size());
-    assertTrue(pokemon.getType().contains(FLYING));
-    assertEquals(65, pokemon.getCp());
-    assertEquals(39, pokemon.getHp());
+    assertEquals(1, pokemon.getTypes().size());
+    assertTrue(pokemon.getTypes().contains(FLYING));
+    assertEquals(65, pokemon.getMaxCP());
+    assertEquals(39, pokemon.getMaxHP());
 
   }
 

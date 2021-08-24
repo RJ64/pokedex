@@ -1,5 +1,6 @@
 package com.pokemon.pokedex.repositories;
 
+import static com.pokemon.pokedex.services.model.PokemonTypeEnum.ELECTRIC;
 import static com.pokemon.pokedex.services.model.PokemonTypeEnum.FLYING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,7 +16,7 @@ class PokemonRepositoryTest {
 
   @BeforeEach
   void setUp() {
-    pokemonRepository = new PokemonRepository();
+    pokemonRepository = new PokemonRepository("./src/test/java/com/pokemon/pokedex/data/pokemons.json");
   }
 
   @Test
@@ -27,13 +28,13 @@ class PokemonRepositoryTest {
 
     //
 
-    assertEquals(2, result.size());
-    var pokemon = result.get(0);
-    assertEquals(1, pokemon.getId());
+    assertEquals(151, result.size());
+    var pokemon = result.get(24);
+    assertEquals(25, pokemon.getId());
     assertEquals("Pikachu", pokemon.getName());
-    assertEquals(0, pokemon.getType().size());
-    assertEquals(0, pokemon.getCp());
-    assertEquals(0, pokemon.getHp());
+    assertEquals(1, pokemon.getTypes().size());
+    assertEquals(777, pokemon.getMaxCP());
+    assertEquals(887, pokemon.getMaxHP());
 
   }
 
@@ -48,12 +49,12 @@ class PokemonRepositoryTest {
 
     assertEquals(1, result.size());
     var pokemon = result.get(0);
-    assertEquals(2, pokemon.getId());
+    assertEquals(26, pokemon.getId());
     assertEquals("Raichu", pokemon.getName());
-    assertEquals(1, pokemon.getType().size());
-    assertTrue(pokemon.getType().contains(FLYING));
-    assertEquals(0, pokemon.getCp());
-    assertEquals(0, pokemon.getHp());
+    assertEquals(1, pokemon.getTypes().size());
+    assertTrue(pokemon.getTypes().contains(ELECTRIC));
+    assertEquals(1859, pokemon.getMaxCP());
+    assertEquals(2028, pokemon.getMaxHP());
 
   }
 
@@ -66,9 +67,7 @@ class PokemonRepositoryTest {
 
     //
 
-    assertEquals(1, result.size());
-    var pokemon = result.get(0);
-    assertEquals(2, pokemon.getId());
+    assertEquals(19, result.size());
 
   }
 
@@ -77,13 +76,11 @@ class PokemonRepositoryTest {
 
     //
 
-    List<Pokemon> result = pokemonRepository.getPokemonsFiltered("rai", FLYING);
+    List<Pokemon> result = pokemonRepository.getPokemonsFiltered("pid", FLYING);
 
     //
 
-    assertEquals(1, result.size());
-    var pokemon = result.get(0);
-    assertEquals(2, pokemon.getId());
+    assertEquals(3, result.size());
 
   }
 

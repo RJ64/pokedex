@@ -6,6 +6,7 @@ import com.pokemon.pokedex.services.PokemonsServices;
 import com.pokemon.pokedex.services.model.PokemonFilter;
 import com.pokemon.pokedex.services.model.PokemonTypeEnum;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,7 +34,7 @@ public class PokemonController {
   ) {
 
     if (!validParameters(pokemonWithType)) {
-      return new ResponseEntity(HttpStatus.BAD_REQUEST);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     var filters = createFilter(pokemonNameContainsSubstring, pokemonWithType);
@@ -54,8 +55,9 @@ public class PokemonController {
   }
 
   private PokemonFilter createFilter(String nameSubstring, String type) {
+    String nameSubstringLowercase = Optional.ofNullable(nameSubstring).map(String::toLowerCase).orElse(null);
     return PokemonFilter.builder()
-      .nameSubstring(nameSubstring)
+      .nameSubstring(nameSubstringLowercase)
       .type(PokemonTypeEnum.toEnum(type))
       .build();
   }

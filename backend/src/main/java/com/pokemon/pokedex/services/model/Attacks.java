@@ -1,5 +1,6 @@
 package com.pokemon.pokedex.services.model;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class PokemonHeight {
-  private String minimum;
-  private String maximum;
+public class Attacks {
+  private List<Attack> fast;
+  private List<Attack> special;
 }
